@@ -1,0 +1,161 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "99865c18-1aad-4906-946c-27d10ade84f9",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2024-10-31 16:29:10.710 \n",
+      "  \u001b[33m\u001b[1mWarning:\u001b[0m to view this Streamlit app on a browser, run it with the following\n",
+      "  command:\n",
+      "\n",
+      "    streamlit run E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\ipykernel_launcher.py [ARGUMENTS]\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 21361 (\\N{CJK UNIFIED IDEOGRAPH-5371}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 38505 (\\N{CJK UNIFIED IDEOGRAPH-9669}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 22240 (\\N{CJK UNIFIED IDEOGRAPH-56E0}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 32032 (\\N{CJK UNIFIED IDEOGRAPH-7D20}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 20010 (\\N{CJK UNIFIED IDEOGRAPH-4E2A}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:129: UserWarning: Glyph 25968 (\\N{CJK UNIFIED IDEOGRAPH-6570}) missing from current font.\n",
+      "  fig.canvas.draw()\n",
+      "E:\\Users\\zl173\\anaconda3\\Lib\\site-packages\\shap\\plots\\_force_matplotlib.py:400: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown\n",
+      "  plt.show()\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 21361 (\\N{CJK UNIFIED IDEOGRAPH-5371}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 38505 (\\N{CJK UNIFIED IDEOGRAPH-9669}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 22240 (\\N{CJK UNIFIED IDEOGRAPH-56E0}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 32032 (\\N{CJK UNIFIED IDEOGRAPH-7D20}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 20010 (\\N{CJK UNIFIED IDEOGRAPH-4E2A}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+      "C:\\Users\\zl173\\AppData\\Local\\Temp\\ipykernel_16784\\1612554337.py:63: UserWarning: Glyph 25968 (\\N{CJK UNIFIED IDEOGRAPH-6570}) missing from current font.\n",
+      "  plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "DeltaGenerator()"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import streamlit.components.v1 as components\n",
+    "import streamlit as st\n",
+    "import joblib\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import shap\n",
+    "import matplotlib.pyplot as plt\n",
+    "from lime.lime_tabular import LimeTabularExplainer\n",
+    "model = joblib.load('APP.pkl')\n",
+    "X_test = pd.read_csv('x_test_app.csv')\n",
+    "feature_names = [ \"AGE\", \"SEX\", \"SMOKE\", \"HP\", \"COPD\", \"DM\", \"CHD\", \n",
+    "                 \"VATS\", \"PATHO\",\"ST\",\"BLOOD\",\"TNM\",\"BMI\", \"FEV1\",\"DLCO\",\n",
+    "                 \"肺段\",\"P-FEV1%\", \"P-DLCO%\", \"FEV1-DLCO一起\",\"危险因素个数\"]\n",
+    "st.title(\"Lung Cancer Predictor\")\n",
+    "AGE = st.number_input(\"AGE:\", min_value=0, max_value=120, value=41)\n",
+    "SEX = st.selectbox(\"SEX:\", options=[0, 1], format_func=lambda x: \"Male\" if x == 1 else \"Female\")\n",
+    "SMOKE= st.selectbox(\"SMOKE:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "HP= st.selectbox(\"HP:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "COPD= st.selectbox(\"COPD:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "DM= st.selectbox(\"DM:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "CHD= st.selectbox(\"CHD:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "VATS= st.selectbox(\"VATS:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "PATHO= st.selectbox(\"PATHO:\", options=[1, 2,3,4])\n",
+    "ST = st.number_input(\"ST:\", min_value=0, max_value=400)\n",
+    "BLOOD = st.number_input(\"BLOOD:\", min_value=0, max_value=2000)\n",
+    "TNM= st.selectbox(\"TNM:\", options=[1, 2,3,4])\n",
+    "BMI = st.number_input(\"BMI:\", min_value=0, max_value=50)\n",
+    "FEV1 = st.number_input(\"FEV1:\", min_value=0, max_value=200)\n",
+    "DLCO = st.number_input(\"DLCO:\", min_value=0, max_value=1000)\n",
+    "肺段= st.selectbox(\"肺段:\", options=[3,4,5,6])\n",
+    "P_FEV1_percent = st.number_input(\"P-FEV1%:\", min_value=0, max_value=100)\n",
+    "P_DLCO_percent = st.number_input(\"P-DLCO%:\", min_value=0, max_value=100)\n",
+    "FEV1_DLCO一起= st.selectbox(\"FEV1-DLCO一起:\", options=[0, 1], format_func=lambda x: \"Yes\" if x == 1 else \"No\")\n",
+    "危险因素个数= st.selectbox(\"危险因素个数:\", options=[0,1,2,3,4,5])\n",
+    "feature_values =  [ AGE, SEX, SMOKE, HP, COPD, DM, CHD, \n",
+    "                 VATS, PATHO,ST,BLOOD,TNM,BMI, FEV1,DLCO,\n",
+    "                 肺段,P_FEV1_percent, P_DLCO_percent, FEV1_DLCO一起,危险因素个数]\n",
+    "features = np.array([feature_values])\n",
+    "predicted_class = model.predict(features)[0]  \n",
+    "predicted_proba = model.predict_proba(features)[0]\n",
+    "st.write(f\"**Predicted Class:** {predicted_class} (1: Disease, 0: No Disease)\")  \n",
+    "st.write(f\"**Prediction Probabilities:** {predicted_proba}\")\n",
+    "predicted_class = int(predicted_class)\n",
+    "probability = predicted_proba[predicted_class] * 100   \n",
+    "if predicted_class == 1:\n",
+    "         advice = (\n",
+    "             f\"According to our model, you have a high risk of heart disease. \"\n",
+    "             f\"The model predicts that your probability of having heart disease is {probability:.1f}%. \" \n",
+    "              \"It's advised to consult with your healthcare provider for further evaluation and possible intervention.\")\n",
+    "else:\n",
+    "        advice = (\n",
+    "             f\"According to our model, you have a low risk of heart disease. \"\n",
+    "             f\"The model predicts that your probability of not having heart disease is {probability:.1f}%. \"\n",
+    "             \"However, maintaining a healthy lifestyle is important. Please continue regular check-ups with your healthcare provider.\")\n",
+    "st.write(advice)\n",
+    "st.subheader(\"SHAP Force Plot Explanation\")\n",
+    "explainer_shap = shap.TreeExplainer(model)    \n",
+    "shap_values = explainer_shap.shap_values(pd.DataFrame([feature_values], columns=feature_names))\n",
+    "if predicted_class == 1:\n",
+    "         shap.force_plot(explainer_shap.expected_value[1], shap_values[:,:,1], pd.DataFrame([feature_values], columns=feature_names), matplotlib=True)\n",
+    "else:\n",
+    "         shap.force_plot(explainer_shap.expected_value[0], shap_values[:,:,0], pd.DataFrame([feature_values], columns=feature_names), matplotlib=True)\n",
+    "plt.savefig(\"shap_force_plot.png\", bbox_inches='tight', dpi=1200)\n",
+    "st.image(\"shap_force_plot.png\", caption='SHAP Force Plot Explanation')\n",
+    "st.subheader(\"LIME Explanation\")\n",
+    "lime_explainer = LimeTabularExplainer(training_data=X_test.values,feature_names=X_test.columns.tolist(),\n",
+    "                                      class_names=['Not sick', 'Sick'],mode='classification')\n",
+    "lime_exp = lime_explainer.explain_instance(data_row=features.flatten(),predict_fn=model.predict_proba)\n",
+    "lime_html = lime_exp.as_html(show_table=False)\n",
+    "components.html(lime_html, height=800, scrolling=True)\n",
+    "        "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8c08f375-7a7e-4b14-947d-d1ca476b9084",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
